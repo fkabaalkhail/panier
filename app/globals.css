@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* dark surface ladder */
+  --color-ink: #000000;
+  --color-surface: #0a0a0a;
+  --color-surface-2: #111111;
+
+  /* chart accents (kept few + distinct for contrast, colour-blind aware) */
+  --color-accent: #f5a524; /* amber – primary emphasis */
+  --color-accent-2: #38bdf8; /* sky – secondary series */
+  --color-accent-3: #4ade80; /* green */
+  --color-accent-4: #f472b6; /* pink */
+  --color-accent-5: #a78bfa; /* violet */
+  --color-accent-6: #fb7185; /* rose */
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #000000;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+/* native select styling for the dark theme */
+select {
+  color-scheme: dark;
+}
+
+/* recharts focus/tooltip cursor tweaks */
+.recharts-cartesian-grid line {
+  stroke: rgba(255, 255, 255, 0.06);
+}
+.recharts-text {
+  fill: rgba(255, 255, 255, 0.45);
+}
+
+:focus-visible {
+  outline: 2px solid rgba(245, 165, 36, 0.7);
+  outline-offset: 2px;
+}
