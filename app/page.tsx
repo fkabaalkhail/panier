@@ -1,3 +1,5 @@
+import Dashboard from "@/components/Dashboard";
+
 export default function Home() {
-  return <main className="p-10">Panier — coming soon</main>;
+  return <Dashboard />;
 }
