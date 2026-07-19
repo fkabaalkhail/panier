@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { FOOD_ITEMS, MONTHS } from "@/lib/data";
 import {
   convert,
@@ -16,6 +17,20 @@ import LanguageSelector from "./LanguageSelector";
 import TrendChart from "./TrendChart";
 import CompareChart from "./CompareChart";
 
+// 21st.dev-style motion: a gentle staggered fade-up on load.
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
+const fadeUp = {
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
+
 export default function Dashboard() {
   const [lang, setLang] = useState<Lang>("en");
   const [itemKey, setItemKey] = useState<ItemKey>("tomatoes");
@@ -29,7 +44,6 @@ export default function Dashboard() {
     value: f.key,
     label: ITEM_NAMES[f.key as ItemKey][lang],
   }));
-
   const monthOptions = MONTHS.map((m, i) => ({
     value: String(i),
     label: formatMonth(m.year, m.month, lang),
@@ -37,7 +51,6 @@ export default function Dashboard() {
 
   const unitLabel = unit === "kg" ? s.perKg : s.perLb;
 
-  // --- trend stats (selected item) ---
   const item = FOOD_ITEMS.find((f) => f.key === itemKey)!;
   const trendStats = useMemo(() => {
     const first = convert(item.pricesCadPerKg[0], currency, unit);
@@ -52,7 +65,6 @@ export default function Dashboard() {
     return { last, avg, change: (last - first) / first };
   }, [item, currency, unit]);
 
-  // --- compare stats (selected month) ---
   const compareStats = useMemo(() => {
     const rows = FOOD_ITEMS.map((f) => ({
       key: f.key as ItemKey,
@@ -71,40 +83,50 @@ export default function Dashboard() {
     { value: "lb", label: "lb" },
   ];
 
+  const cardCls =
+    "rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)]/80 p-5 backdrop-blur-sm sm:p-6";
+
   return (
-    <div className="mx-auto min-h-screen max-w-6xl px-5 py-8 sm:px-8 sm:py-12">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="mx-auto min-h-screen max-w-6xl px-5 py-10 sm:px-8 sm:py-14"
+    >
       {/* Header */}
-      <header className="flex flex-col gap-4 border-b border-white/[0.08] pb-6 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <span
-              className="grid h-9 w-9 place-items-center rounded-lg bg-amber-400 text-lg"
-              aria-hidden="true"
-            >
-              🧺
-            </span>
-            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+      <motion.header
+        variants={fadeUp}
+        className="flex flex-col gap-5 border-b border-[var(--color-line)] pb-7 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="flex items-center gap-3.5">
+          <Logo />
+          <div>
+            <h1 className="text-[26px] font-semibold leading-none tracking-tight text-white sm:text-3xl">
               {s.appName}
             </h1>
+            <p className="mt-2 text-sm text-white/45">{s.tagline}</p>
           </div>
-          <p className="mt-2 text-sm text-white/50">{s.tagline}</p>
         </div>
         <LanguageSelector lang={lang} onChange={setLang} label={s.langLabel} />
-      </header>
+      </motion.header>
 
-      {/* Synthetic / source note */}
-      <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-amber-400/20 bg-amber-400/[0.06] px-3 py-2 text-xs text-amber-200/80">
-        <span aria-hidden="true">ⓘ</span>
-        <span>{s.syntheticNote}</span>
-        <span className="text-amber-200/50">{s.dataSource}</span>
-      </div>
+      {/* Source / demo note */}
+      <motion.div
+        variants={fadeUp}
+        className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-xl border border-[var(--color-line)] bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/50"
+      >
+        <InfoIcon />
+        <span className="text-white/60">{s.syntheticNote}</span>
+        <span className="text-white/35">{s.dataSource}</span>
+      </motion.div>
 
       {/* Controls */}
-      <section
+      <motion.section
+        variants={fadeUp}
         aria-label={s.controls}
-        className="mt-6 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5"
+        className="mt-6 rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)]/60 p-5 sm:p-6"
       >
-        <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white/40">
+        <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
           {s.controls}
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -135,21 +157,24 @@ export default function Dashboard() {
             onChange={(v) => setUnit(v as Unit)}
           />
         </div>
-      </section>
+      </motion.section>
 
       {/* Charts */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Trend (line) */}
-        <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5">
+        <motion.section variants={fadeUp} className={cardCls}>
           <h2 className="text-lg font-semibold text-white">
             {s.trendTitle(ITEM_NAMES[itemKey][lang])}
           </h2>
-          <p className="mt-1 text-xs leading-relaxed text-white/45">
+          <p className="mt-1.5 text-[13px] leading-relaxed text-white/45">
             {s.trendContext}
           </p>
 
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            <Stat label={`${s.latest} (${unitLabel})`} value={formatCurrency(trendStats.last, lang, currency)} />
+          <div className="mt-5 grid grid-cols-3 gap-3">
+            <Stat
+              label={`${s.latest} (${unitLabel})`}
+              value={formatCurrency(trendStats.last, lang, currency)}
+            />
             <Stat label={s.avg} value={formatCurrency(trendStats.avg, lang, currency)} />
             <Stat
               label={s.change24}
@@ -158,35 +183,45 @@ export default function Dashboard() {
             />
           </div>
 
-          <div className="mt-4">
+          <div className="mt-5">
             <TrendChart lang={lang} itemKey={itemKey} currency={currency} unit={unit} />
           </div>
           <p className="mt-1 text-center text-[11px] text-white/30">
             {s.perUnit(unitLabel)}
           </p>
-        </section>
+        </motion.section>
 
         {/* Compare (bar) */}
-        <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5">
+        <motion.section variants={fadeUp} className={cardCls}>
           <h2 className="text-lg font-semibold text-white">
-            {s.compareTitle(formatMonth(MONTHS[monthIndex].year, MONTHS[monthIndex].month, lang, true))}
+            {s.compareTitle(
+              formatMonth(MONTHS[monthIndex].year, MONTHS[monthIndex].month, lang, true)
+            )}
           </h2>
-          <p className="mt-1 text-xs leading-relaxed text-white/45">
+          <p className="mt-1.5 text-[13px] leading-relaxed text-white/45">
             {s.compareContext}
           </p>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             <Stat
               label={s.cheapest}
-              value={`${ITEM_NAMES[compareStats.cheapest.key][lang]} · ${formatCurrency(compareStats.cheapest.value, lang, currency)}`}
+              value={`${ITEM_NAMES[compareStats.cheapest.key][lang]} · ${formatCurrency(
+                compareStats.cheapest.value,
+                lang,
+                currency
+              )}`}
             />
             <Stat
               label={s.priciest}
-              value={`${ITEM_NAMES[compareStats.priciest.key][lang]} · ${formatCurrency(compareStats.priciest.value, lang, currency)}`}
+              value={`${ITEM_NAMES[compareStats.priciest.key][lang]} · ${formatCurrency(
+                compareStats.priciest.value,
+                lang,
+                currency
+              )}`}
             />
           </div>
 
-          <div className="mt-4">
+          <div className="mt-5">
             <CompareChart
               lang={lang}
               monthIndex={monthIndex}
@@ -198,13 +233,52 @@ export default function Dashboard() {
           <p className="mt-1 text-center text-[11px] text-white/30">
             {s.perUnit(unitLabel)}
           </p>
-        </section>
+        </motion.section>
       </div>
 
-      <footer className="mt-10 border-t border-white/[0.08] pt-5 text-center text-xs text-white/30">
+      <motion.footer
+        variants={fadeUp}
+        className="mt-12 border-t border-[var(--color-line)] pt-6 text-center text-xs text-white/30"
+      >
         {s.footer}
-      </footer>
-    </div>
+      </motion.footer>
+    </motion.div>
+  );
+}
+
+/** Minimal SVG data-mark — replaces the old emoji logo. */
+function Logo() {
+  return (
+    <span className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--color-line)] bg-white/[0.02]">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M4 20V10M9.5 20V4M15 20v-7M20.5 20V8"
+          stroke="var(--color-accent)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg
+      className="h-3.5 w-3.5 shrink-0 text-[var(--color-accent)]"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M12 11v5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="7.6" r="1" fill="currentColor" />
+    </svg>
   );
 }
 
@@ -219,18 +293,16 @@ function Stat({
 }) {
   const color =
     tone === "up"
-      ? "text-rose-400"
+      ? "text-[var(--color-accent-strong)]"
       : tone === "down"
-        ? "text-emerald-400"
+        ? "text-emerald-400/90"
         : "text-white";
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
-      <div className="text-[10px] uppercase tracking-wider text-white/40">
+    <div className="rounded-xl border border-[var(--color-line)] bg-white/[0.015] px-3.5 py-3">
+      <div className="text-[10px] uppercase tracking-[0.1em] text-white/35">
         {label}
       </div>
-      <div className={"mt-0.5 truncate text-sm font-semibold " + color}>
-        {value}
-      </div>
+      <div className={"mt-1 truncate text-sm font-semibold " + color}>{value}</div>
     </div>
   );
 }

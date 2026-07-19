@@ -85,7 +85,7 @@ export default function CompareChart({
               return (
                 <div className="rounded-lg border border-white/10 bg-neutral-900/95 px-3 py-2 text-xs shadow-xl">
                   <div className="font-medium text-white/90">{row.label}</div>
-                  <div className="mt-0.5 text-amber-400">
+                  <div className="mt-0.5 font-medium" style={{ color: "var(--color-accent)" }}>
                     {formatCurrency(row.value, lang, currency)}
                   </div>
                 </div>
@@ -96,12 +96,12 @@ export default function CompareChart({
             {data.map((row) => (
               <Cell
                 key={row.key}
-                // Contrast: the currently-selected item is highlighted amber,
-                // the rest recede to a muted grey so the eye lands on it.
+                // Contrast: the currently-selected item is highlighted with the
+                // accent, the rest recede to a muted tone so the eye lands on it.
                 fill={
                   row.key === selectedItem
                     ? "var(--color-accent)"
-                    : "rgba(255,255,255,0.22)"
+                    : "var(--color-muted)"
                 }
               />
             ))}

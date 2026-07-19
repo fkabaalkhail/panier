@@ -76,7 +76,7 @@ export default function TrendChart({ lang, itemKey, currency, unit }: Props) {
               return (
                 <div className="rounded-lg border border-white/10 bg-neutral-900/95 px-3 py-2 text-xs shadow-xl">
                   <div className="font-medium text-white/90">{row.label}</div>
-                  <div className="mt-0.5 text-amber-400">
+                  <div className="mt-0.5 font-medium" style={{ color: "var(--color-accent)" }}>
                     {formatCurrency(row.value, lang, currency)}
                   </div>
                 </div>
