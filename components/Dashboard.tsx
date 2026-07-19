@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { Basket, Info } from "@phosphor-icons/react";
 import { FOOD_ITEMS, MONTHS } from "@/lib/data";
 import {
   convert,
@@ -246,39 +247,23 @@ export default function Dashboard() {
   );
 }
 
-/** Minimal SVG data-mark — replaces the old emoji logo. */
+/** Brand mark — Phosphor basket ("panier" = basket). */
 function Logo() {
   return (
     <span className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--color-line)] bg-white/[0.02]">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M4 20V10M9.5 20V4M15 20v-7M20.5 20V8"
-          stroke="var(--color-accent)"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <Basket size={24} weight="duotone" color="var(--color-accent)" aria-hidden="true" />
     </span>
   );
 }
 
 function InfoIcon() {
   return (
-    <svg
-      className="h-3.5 w-3.5 shrink-0 text-[var(--color-accent)]"
-      viewBox="0 0 24 24"
-      fill="none"
+    <Info
+      size={16}
+      weight="fill"
+      className="shrink-0 text-[var(--color-accent)]"
       aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
-      <path
-        d="M12 11v5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-      <circle cx="12" cy="7.6" r="1" fill="currentColor" />
-    </svg>
+    />
   );
 }
 
