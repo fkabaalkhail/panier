@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Basket, Info } from "@phosphor-icons/react";
 import { FOOD_ITEMS, MONTHS } from "@/lib/data";
 import {
@@ -40,6 +40,10 @@ export default function Dashboard() {
   const [unit, setUnit] = useState<Unit>("kg");
 
   const s = t[lang];
+
+  // Respect the user's motion preference (accessibility); also yields a clean
+  // static first paint. When reduced, we render straight to the final state.
+  const prefersReduced = useReducedMotion();
 
   const itemOptions = FOOD_ITEMS.map((f) => ({
     value: f.key,
@@ -90,7 +94,7 @@ export default function Dashboard() {
   return (
     <motion.div
       variants={container}
-      initial="hidden"
+      initial={prefersReduced ? false : "hidden"}
       animate="show"
       className="mx-auto min-h-screen max-w-6xl px-5 py-10 sm:px-8 sm:py-14"
     >
