@@ -13,7 +13,7 @@ import {
 import { MONTHS, FOOD_ITEMS } from "@/lib/data";
 import {
   convert,
-  currencySymbol,
+  formatAxisCurrency,
   formatCurrency,
   formatMonth,
   type Currency,
@@ -44,7 +44,6 @@ export default function TrendChart({ lang, itemKey, currency, unit }: Props) {
     value: convert(item.pricesCadPerKg[i], currency, unit),
   }));
 
-  const sym = currencySymbol(lang, currency);
   const peakIdx = data.reduce((best, r, i) => (r.value > data[best].value ? i : best), 0);
 
   return (
@@ -65,7 +64,9 @@ export default function TrendChart({ lang, itemKey, currency, unit }: Props) {
             tick={{ fontSize: 11 }}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(v: number) => `${sym}${v.toFixed(unit === "lb" ? 2 : 1)}`}
+            tickFormatter={(v: number) =>
+              formatAxisCurrency(v, lang, currency, unit === "lb" ? 2 : 1)
+            }
             domain={["auto", "auto"]}
           />
           <Tooltip

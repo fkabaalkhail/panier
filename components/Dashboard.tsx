@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Basket, Info } from "@phosphor-icons/react";
 import { FOOD_ITEMS, MONTHS } from "@/lib/data";
@@ -44,6 +44,28 @@ export default function Dashboard() {
   // Respect the user's motion preference (accessibility); also yields a clean
   // static first paint. When reduced, we render straight to the final state.
   const prefersReduced = useReducedMotion();
+
+  // Deep-linkable + remembered language: read ?lang / localStorage on mount,
+  // and keep the URL + storage in sync so a chosen language is shareable.
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("lang");
+    const stored = localStorage.getItem("panier-lang");
+    const pick = [param, stored].find((v) => v === "en" || v === "fr");
+    if (pick && pick !== lang) setLang(pick as Lang);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const changeLang = (l: Lang) => {
+    setLang(l);
+    try {
+      localStorage.setItem("panier-lang", l);
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", l);
+      window.history.replaceState({}, "", url);
+    } catch {
+      /* no-op */
+    }
+  };
 
   const itemOptions = FOOD_ITEMS.map((f) => ({
     value: f.key,
@@ -112,7 +134,7 @@ export default function Dashboard() {
             <p className="mt-2 text-sm text-white/45">{s.tagline}</p>
           </div>
         </div>
-        <LanguageSelector lang={lang} onChange={setLang} label={s.langLabel} />
+        <LanguageSelector lang={lang} onChange={changeLang} label={s.langLabel} />
       </motion.header>
 
       {/* Source / demo note */}

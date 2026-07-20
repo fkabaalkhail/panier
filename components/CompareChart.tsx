@@ -13,7 +13,7 @@ import {
 import { FOOD_ITEMS } from "@/lib/data";
 import {
   convert,
-  currencySymbol,
+  formatAxisCurrency,
   formatCurrency,
   type Currency,
   type Unit,
@@ -41,8 +41,6 @@ export default function CompareChart({
   unit,
   selectedItem,
 }: Props) {
-  const sym = currencySymbol(lang, currency);
-
   const data: Row[] = FOOD_ITEMS.map((f) => ({
     key: f.key as ItemKey,
     label: ITEM_NAMES[f.key as ItemKey][lang],
@@ -67,7 +65,7 @@ export default function CompareChart({
             tick={{ fontSize: 11 }}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(v: number) => `${sym}${v.toFixed(0)}`}
+            tickFormatter={(v: number) => formatAxisCurrency(v, lang, currency, 0)}
           />
           <YAxis
             type="category"

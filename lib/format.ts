@@ -66,6 +66,22 @@ export function formatMonth(
   }).format(d);
 }
 
+/** Compact currency for chart axis ticks, fully localized.
+ *  en-CA -> "$7.2" / "$0"   |   fr-CA -> "7,2 $" / "0 $"   |   EUR fr -> "7,2 €" */
+export function formatAxisCurrency(
+  value: number,
+  lang: Lang,
+  currency: Currency,
+  digits = 0
+): string {
+  return new Intl.NumberFormat(LOCALE[lang], {
+    style: "currency",
+    currency,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value);
+}
+
 /** Currency symbol only, for axis tick prefixes. */
 export function currencySymbol(lang: Lang, currency: Currency): string {
   const parts = new Intl.NumberFormat(LOCALE[lang], {
